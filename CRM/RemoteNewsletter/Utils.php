@@ -40,4 +40,38 @@ SQL;
       }
       return $subscriptions;
     }
+
+    public function generateCheckSum($contactId, $ts = null, $live=null){
+      $hash = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact',
+        $contactId, 'hash'
+      );
+
+      if (!$hash) {
+        $hash = md5(uniqid(rand(), TRUE));
+        CRM_Core_DAO::setFieldValue('CRM_Contact_DAO_Contact',
+          $contactId,
+          'hash', $hash
+        );
+      }
+
+      if (!$ts) {
+        $ts = time();
+      }
+
+      if (!$live) {
+        $days = Civi::settings()->get('checksum_timeout');
+        $live = 24 * $days;
+      }
+
+      $cs = md5("{$hash}_{$contactId}_RemoteNewsLetter_{$live}_{$ts}");
+      return  "{$cs}_{$ts}_{$live}";
+
+
+    }
+
+    public function validateCheckSum($contactId,$checkSum){
+       $parts = explode('_',$checkSum);
+       $calc = $this->generateCheckSum($contactId,$parts[1],$parts[2]);
+       return $calc === $checkSum;
+    }
 }

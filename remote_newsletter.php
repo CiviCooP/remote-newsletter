@@ -184,8 +184,9 @@ function remote_newsletter_civicrm_tokens(&$tokens) {
 
 function remote_newsletter_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null){
   if (array_key_exists('unsubscribe', $tokens['remotenewsletter']) || in_array('unsubscribe', $tokens['remotenewsletter'])) {
+    $utils = new CRM_RemoteNewsletter_Utils();
     foreach ($cids as $cid) {
-      $remoteUrl= Civi::settings()->get('remotenewsletter_unsubscribe_url').'?cid='.$cid.'&cs='.CRM_Contact_BAO_Contact_Utils::generateChecksum($cid, NULL, 'inf');
+      $remoteUrl= Civi::settings()->get('remotenewsletter_unsubscribe_url').'?cid='.$cid.'&cs='.$utils->generateCheckSum($cid);
       $remoteText = Civi::settings()->get('remotenewsletter_unsubscribe_url_text');
       $values[$cid]['remotenewsletter.unsubscribe'] = "<a href='$remoteUrl'>$remoteText</a>";
     }
@@ -204,4 +205,11 @@ function remote_newsletter_civicrm_tokenValues(&$values, $cids, $job = null, $to
       }
     }
   };
+}
+
+function remote_newsletter_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
+{
+  if(strtolower($entity)=='remotenewsletter'){
+    $params['check_permissions'] = false;
+  }
 }

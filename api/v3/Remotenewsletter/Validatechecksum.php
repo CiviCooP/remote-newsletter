@@ -41,10 +41,11 @@ function _civicrm_api3_remotenewsletter_Validatechecksum_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_remotenewsletter_Validatechecksum($params) {
-   $result = CRM_Contact_BAO_Contact_Utils::validChecksum(
+   $utils = new CRM_RemoteNewsletter_Utils();
+   $result = $utils->validateCheckSum(
      $params['contact_id'],
      $params['checksum']
    );
    $values['valid'] = $result?1:0;
-   return civicrm_api3_create_success($values, $params, 'Remotenewsletter', 'Subscribe');
+   return civicrm_api3_create_success($values, $params, 'Remotenewsletter', 'Validatechecksum');
 }
