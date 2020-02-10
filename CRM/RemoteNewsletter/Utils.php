@@ -41,7 +41,13 @@ SQL;
       return $subscriptions;
     }
 
-    public function generateCheckSum($contactId, $ts = null, $live=null){
+  /**
+   * @param $contactId
+   * @param null $ts
+   * @param null $live
+   * @return string
+   */
+  public function generateCheckSum($contactId, $ts = null, $live=null){
       $hash = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact',
         $contactId, 'hash'
       );
@@ -65,11 +71,14 @@ SQL;
 
       $cs = md5("{$hash}_{$contactId}_RemoteNewsLetter_{$live}_{$ts}");
       return  "{$cs}_{$ts}_{$live}";
-
-
     }
 
-    public function validateCheckSum($contactId,$checkSum){
+  /**
+   * @param $contactId
+   * @param $checkSum
+   * @return bool
+   */
+  public function validateCheckSum($contactId, $checkSum){
        $parts = explode('_',$checkSum);
        $calc = $this->generateCheckSum($contactId,$parts[1],$parts[2]);
        return $calc === $checkSum;

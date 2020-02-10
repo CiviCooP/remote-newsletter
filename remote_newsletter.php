@@ -175,6 +175,9 @@ function remote_newsletter_civicrm_navigationMenu(&$menu) {
   _remote_newsletter_civix_navigationMenu($menu);
 }
 
+/**
+ * @param $tokens
+ */
 function remote_newsletter_civicrm_tokens(&$tokens) {
   $tokens['remotenewsletter'] = [
       'remotenewsletter.unsubscribe' => 'Unsubscrible link for the remote site (include checkSum)',
@@ -182,6 +185,13 @@ function remote_newsletter_civicrm_tokens(&$tokens) {
   ];
 }
 
+/**
+ * @param $values
+ * @param $cids
+ * @param null $job
+ * @param array $tokens
+ * @param null $context
+ */
 function remote_newsletter_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null){
   if (array_key_exists('unsubscribe', $tokens['remotenewsletter']) || in_array('unsubscribe', $tokens['remotenewsletter'])) {
     $utils = new CRM_RemoteNewsletter_Utils();
@@ -207,8 +217,17 @@ function remote_newsletter_civicrm_tokenValues(&$values, $cids, $job = null, $to
   };
 }
 
+/**
+ * @param $entity
+ * @param $action
+ * @param $params
+ * @param $permissions
+ */
 function remote_newsletter_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
 {
+  /* the remote newsletter can be used by an user with no permissions in CiviCRM.
+     Its good practice to create such an user
+  */
   if(strtolower($entity)=='remotenewsletter'){
     $params['check_permissions'] = false;
   }
