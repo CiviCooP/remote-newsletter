@@ -17,7 +17,26 @@ use CRM_RemoteNewsletter_ExtensionUtil as E;
 class CRM_RemoteNewsletter_Form_Preferences extends CRM_Core_Form {
 
   const REMOTE_NEWSLETTER = 'Remote Newsletter';
-  private $keys = ['remotenewsletter_groups','remotenewsletter_dedupe_id','remotenewsletter_unsubscribe_url','remotenewsletter_unsubscribe_url_text'];
+
+  private $keys = [
+    'remotenewsletter_groups',
+    'remotenewsletter_dedupe_id',
+    'remotenewsletter_unsubscribe_url',
+    'remotenewsletter_unsubscribe_url_text',
+    'remotenewsletter_subscribe_template_id',
+    'remotenewsletter_updateprefences_template_id'
+  ];
+
+  private function mailTemplates()
+  {
+    $options = [];
+    $dao = CRM_Core_DAO::executeQuery('select id, msg_title from civicrm_msg_template where is_active=1 and workflow_id is null order by msg_title');
+    while ($dao->fetch()) {
+      $options[$dao->id] = $dao->msg_title;
+    }
+    return $options;
+  }
+
   var $_group = null;
 
   private function groups()
@@ -65,6 +84,24 @@ class CRM_RemoteNewsletter_Form_Preferences extends CRM_Core_Form {
       ],
       'select' => ['minimumInputLength' => 0]
     ]);
+
+    $this->add(
+      'select', // field type
+      'remotenewsletter_subscribe_template_id', // field name
+      'Email for the subscription message', // field label
+      $this->mailTemplates(), // list of options
+      true, // is required
+      []
+    );
+
+    $this->add(
+      'select', // field type
+      'remotenewsletter_updateprefences_template_id', // field name
+      'Email for the unsubscription message', // field label
+      $this->mailTemplates(), // list of options
+      true, // is required
+      []
+    );
 
     $this->add('text','remotenewsletter_unsubscribe_url','Remote Newsletter URL');
     $this->add('text','remotenewsletter_unsubscribe_url_text','Remote Newsletter URL Text');

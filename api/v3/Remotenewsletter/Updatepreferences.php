@@ -54,6 +54,10 @@ function civicrm_api3_remotenewsletter_Updatepreferences($params) {
       ]);
     }
   }
+  civicrm_api3('Email', 'Send', [
+    'contact_id' => $contactId,
+    'template_id' =>Civi::settings()->get('remotenewsletter_updateprefences_template_id'),
+  ]);
   return civicrm_api3_create_success([], $params, 'Remotenewsletter', 'Updatepreferences');
 
 }

@@ -76,11 +76,19 @@ function civicrm_api3_remotenewsletter_Subscribe($params) {
     }
 
     foreach($params['subscription'] as $groupId){
-      civicrm_api3('GroupContact','create',[
-         'contact_id'=> $contactId,
-         'group_id' => $groupId
-      ]);
+      if($groupId) {
+        civicrm_api3('GroupContact', 'create', [
+          'contact_id' => $contactId,
+          'group_id' => $groupId
+        ]);
+      }
     }
+
+    civicrm_api3('Email', 'Send', [
+    'contact_id' => $contactId,
+    'template_id' =>Civi::settings()->get('remotenewsletter_subscribe_template_id'),
+    ]);
+
     $result=[];
     return civicrm_api3_create_success($result, $params, 'Remotenewsletter', 'Subscribe');
 }
